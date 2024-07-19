@@ -1,23 +1,29 @@
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Stackoverflow_Light.Configurations;
-using DotNetEnv;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-//add env variables for storing sensitive data
+// Load environment variables from .env file
 Env.Load();
 builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Add services relying on OIDC (using Keycloak as provider) 
+KeycloakConfiguration.Initialize(builder.Configuration);
+builder.Services.AddSwaggerWithKeycloak();
+builder.Services.AddKeycloakAuthentication();
+builder.Services.AddKeycloakAuthorization();
+
+builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 3, 0)))); 
+        new MySqlServerVersion(new Version(8, 3, 0))));
 
 var app = builder.Build();
 
@@ -25,10 +31,20 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.OAuthClientId("LightClientID"); 
+        c.OAuthAppName("My API - Swagger");
+        c.OAuthUsePkce(); 
+        c.OAuthScopes(new[] { "openid"});
+    });
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication(); 
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();

@@ -1,0 +1,17 @@
+services:  
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.3
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - DB_VENDOR=${DB_VENDOR}
+      - DB_ADDR=${DB_VENDOR}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_ROOT_PASSWORD}
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+      - ${KEYCLOAK_PORT}:${KEYCLOAK_PORT}
+    command: ["start-dev", "--http-port=${KEYCLOAK_PORT}"]
