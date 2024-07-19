@@ -1,6 +1,6 @@
 @Stackoverflow_Light_HostAddress = http://localhost:5098
 
-GET {{Stackoverflow_Light_HostAddress}}/weatherforecast/
+GET {{Stackoverflow_Light_HostAddress}}/Test/
 Accept: application/json
 
 ###

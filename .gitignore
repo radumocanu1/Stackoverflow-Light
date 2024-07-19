@@ -1,3 +1,6 @@
+# .env file
+.env
+
 # Rider specific
 .idea/
 .idea/*
