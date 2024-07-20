@@ -1,5 +1,6 @@
 using Stackoverflow_Light.Configurations;
 using Stackoverflow_Light.Entities;
+using Stackoverflow_Light.Exceptions;
 using Stackoverflow_Light.Repositories;
 using Stackoverflow_Light.Utils;
 
@@ -33,9 +34,10 @@ public class UserService : IUserService
         return await _userRepository.CreateUserAsync(user);
     }
 
-    public async Task<User> GetUserFromSubClaim(string subClaim)
+    public async Task<Guid> GetUserIdFromSubClaimAsync(string subClaim)
     {
-        return await _userRepository.GetUserBySubClaimAsync(subClaim);
+        var oidcUserMapping = await _userRepository.GetOidcUserMappingFromSubClaimAsync(subClaim);
+        return oidcUserMapping.UserId;
     }
     
 }

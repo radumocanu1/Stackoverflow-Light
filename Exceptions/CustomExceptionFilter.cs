@@ -5,6 +5,7 @@ namespace Stackoverflow_Light.Exceptions;
 
 public class CustomExceptionFilter : IExceptionFilter
 {
+
     public void OnException(ExceptionContext context)
     {
         if (context.Exception is OidcUserMappingNotFound oidcUserMappingNotFound)
@@ -21,13 +22,19 @@ public class CustomExceptionFilter : IExceptionFilter
                 StatusCode = 400
             };
         }
-        // else
-        // {
-        //     context.Result = new ObjectResult(new { message = "An unexpected error occurred." })
-        //     {
-        //         StatusCode = 500
-        //     };
-        // }
-        // context.ExceptionHandled = true;
+        else if (context.Exception is QuestionNotFound questionNotFound)
+        {
+            context.Result = new ObjectResult(new { message = questionNotFound.Message })
+            {
+                StatusCode = 404
+            };
+        }
+        else if (context.Exception is OperationNotAllowed operationNotAllowed)
+        {
+            context.Result = new ObjectResult(new { message = operationNotAllowed.Message })
+            {
+                StatusCode = 403
+            };
+        }
     }
 }

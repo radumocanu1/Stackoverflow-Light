@@ -40,6 +40,10 @@ builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerService, AnswerService>();
 builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
 
+// add in memory caching service 
+builder.Services.Configure<AppSettings>(builder.Configuration);
+builder.Services.AddMemoryCache();
+
 
 var app = builder.Build();
 

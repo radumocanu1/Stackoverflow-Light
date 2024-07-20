@@ -19,6 +19,12 @@ public class Question
     // Navigation property
     [JsonIgnore]
     public User User { get; set; }
-
     public ICollection<Answer> Answers { get; set; } = new List<Answer>();
+     
+    // variable that holds the number of UNIQUE viewers of a question 
+    // can also be computed by running a SQL count on the associative table between User and Question entities
+    // stored directly in the Question table + updated regularly for fast question ordering on demand 
+    public int ViewsCount { get; set; } = 0;
+    public ICollection<UserQuestionView> UserQuestionViews { get; set; } = new List<UserQuestionView>();
+
 }

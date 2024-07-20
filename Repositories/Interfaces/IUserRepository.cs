@@ -5,5 +5,5 @@ namespace Stackoverflow_Light.Repositories;
 public interface IUserRepository
 {
     Task<User> CreateUserAsync(User user);
-    Task<User> GetUserBySubClaimAsync(string subClaim);
+    Task<OidcUserMapping> GetOidcUserMappingFromSubClaimAsync(string subClaim);
 }

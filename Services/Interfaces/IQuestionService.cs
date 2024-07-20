@@ -5,5 +5,13 @@ namespace Stackoverflow_Light.Services;
 
 public interface IQuestionService
 {
-    Task<Question> CreateQuestionAsync(string token, CreateQuestionRequest createQuestionRequest);
+    Task<IEnumerable<Question>> GetQuestionsAsync(int offset, int size);
+    Task<Question> CreateQuestionAsync(string token, QuestionRequest questionRequest);
+    Task<Question> GetQuestionAsync(string token, Guid questionId);
+
+    Task DeleteQuestionAsync(string token,Guid questionId);
+    Task DeleteQuestionAdminAsync(Guid questionId);
+
+    Task<Question> EditQuestionAsync(string token, Guid questionId, QuestionRequest questionRequest);
+
 }

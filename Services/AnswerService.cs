@@ -20,11 +20,11 @@ public class AnswerService : IAnswerService
     public async Task<Answer> CreateAnswerAsync(string token, Guid questionId , CreateAnswerRequest createAnswerRequest)
     {
         var subClaim = _tokenClaimsExtractor.ExtractClaim(token, "sub");
-        var user = _userService.GetUserFromSubClaim(subClaim);
+        var userId = _userService.GetUserIdFromSubClaimAsync(subClaim);
         var answer = new Answer
         {
             Content = createAnswerRequest.Content,
-            User = user.Result,
+            UserId = userId.Result,
             QuestionId = questionId
         };
         return await _answerRepository.CreateAnswerAsync(answer);

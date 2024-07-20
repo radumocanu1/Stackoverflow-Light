@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Stackoverflow_Light.Configurations;
 using Stackoverflow_Light.Entities;
+using Stackoverflow_Light.Exceptions;
 
 namespace Stackoverflow_Light.Repositories;
 
@@ -20,11 +21,15 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<User> GetUserBySubClaimAsync(string subClaim)
+    public async Task<OidcUserMapping> GetOidcUserMappingFromSubClaimAsync(string subClaim)
     {
-        return await _context.Users
-            .Include(u => u.OidcUserMapping)
-            .FirstOrDefaultAsync(u => u.OidcUserMapping.SubClaim == subClaim);
+        var oidcUserMapping = await _context.OidcUserMappings.FirstOrDefaultAsync(o => o.SubClaim == subClaim);
+        if (oidcUserMapping == null)
+            throw new OidcUserMappingNotFound(ApplicationConstants.OIDC_MAPPING_NOT_CREATED);
+
+        return oidcUserMapping;
+
+
     }
     
 }

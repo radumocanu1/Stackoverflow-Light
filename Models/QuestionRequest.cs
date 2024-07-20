@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Stackoverflow_Light.models;
 
-public class CreateQuestionRequest
+public class QuestionRequest
 {
     [Required]
     [StringLength(200, MinimumLength = 5)]

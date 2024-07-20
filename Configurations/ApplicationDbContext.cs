@@ -12,6 +12,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<OidcUserMapping> OidcUserMappings { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<Answer> Answers { get; set; }
+    public DbSet<UserQuestionView> UserQuestionViews { get; set; }
+
 
 
 
@@ -33,6 +35,19 @@ public class ApplicationDbContext : DbContext
             .HasMany(q => q.Answers)
             .WithOne(a => a.Question)
             .HasForeignKey(a => a.QuestionId);
+        
+        modelBuilder.Entity<UserQuestionView>()
+            .HasKey(uqv => new { uqv.UserId, uqv.QuestionId });
+
+        modelBuilder.Entity<UserQuestionView>()
+            .HasOne(uqv => uqv.User)
+            .WithMany(u => u.UserQuestionViews)
+            .HasForeignKey(uqv => uqv.UserId);
+
+        modelBuilder.Entity<UserQuestionView>()
+            .HasOne(uqv => uqv.Question)
+            .WithMany(q => q.UserQuestionViews)
+            .HasForeignKey(uqv => uqv.QuestionId);
     
     }
 }

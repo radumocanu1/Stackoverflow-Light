@@ -5,6 +5,6 @@ namespace Stackoverflow_Light.Services;
 public interface IUserService
 {
     Task<User> CreateMappingAsync(string token);
-    Task<User> GetUserFromSubClaim(string subClaim);
+    Task<Guid> GetUserIdFromSubClaimAsync(string subClaim);
 
 }
