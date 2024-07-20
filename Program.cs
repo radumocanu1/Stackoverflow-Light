@@ -1,6 +1,10 @@
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Stackoverflow_Light.Configurations;
+using Stackoverflow_Light.Exceptions;
+using Stackoverflow_Light.Repositories;
+using Stackoverflow_Light.Services;
+using Stackoverflow_Light.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +22,24 @@ builder.Services.AddKeycloakAuthentication();
 builder.Services.AddKeycloakAuthorization();
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<CustomExceptionFilter>();
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new MySqlServerVersion(new Version(8, 3, 0))));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<TokenClaimsExtractor>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IAnswerService, AnswerService>();
+builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+
 
 var app = builder.Build();
 

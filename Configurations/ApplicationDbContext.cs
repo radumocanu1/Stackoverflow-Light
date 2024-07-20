@@ -8,9 +8,12 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }
-    public DbSet<Question> YourEntities { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<OidcUserMapping> OidcUserMappings { get; set; }
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<Answer> Answers { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,6 +24,15 @@ public class ApplicationDbContext : DbContext
             .WithOne(u => u.OidcUserMapping)
             .HasForeignKey<OidcUserMapping>(oum => oum.UserId);
 
-      
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Questions)
+            .WithOne(q => q.User)
+            .HasForeignKey(q => q.UserId);
+        
+        modelBuilder.Entity<Question>()
+            .HasMany(q => q.Answers)
+            .WithOne(a => a.Question)
+            .HasForeignKey(a => a.QuestionId);
+    
     }
 }

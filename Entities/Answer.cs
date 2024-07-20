@@ -4,21 +4,23 @@ using System.Text.Json.Serialization;
 
 namespace Stackoverflow_Light.Entities;
 
-public class Question
+public class Answer
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
-    [Required]
     public string Content { get; set; }
     // variable to hold the ratio between upvotes and downvotes 
     public int Score { get; set; } = 0;
     // Foreign key to User
     public Guid UserId { get; set; }
-
+    // Foreign key to Question
+    public Guid QuestionId { get; set; }
     // Navigation property
     [JsonIgnore]
     public User User { get; set; }
 
-    public ICollection<Answer> Answers { get; set; } = new List<Answer>();
+    [JsonIgnore] 
+    public Question Question;
+
 }
