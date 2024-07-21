@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Stackoverflow_Light.Configurations;
 using Stackoverflow_Light.models;
 using Stackoverflow_Light.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Stackoverflow_Light.Controllers;
 
@@ -20,15 +21,25 @@ public class QuestionController : ControllerBase
 
     [Authorize]
     [HttpPost]
+    [SwaggerOperation(Summary = "Creates a new question", Description = "Creates a new question with the given content")]
+    [SwaggerResponse(201, "Question created successfully")]
+    [SwaggerResponse(404, "Question was not found in the DB")]
+    [SwaggerResponse(401, "Unauthorized user")]
+    [SwaggerResponse(400, "Mapping not created/ Validation errors")]
     public async Task<IActionResult> CreateQuestion([FromBody] QuestionRequest questionRequest)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
         var question = await _questionService.CreateQuestionAsync(token, questionRequest);
-        return Ok(question);
+        var uri = Url.Action("GetQuestion", new { questionId = question.Id });
+        return Created(uri, question);
 
     }
 
     [HttpGet("{questionId}")]
+    [SwaggerOperation(Summary = "Get question details", Description = "Get question details with the given Id")]
+    [SwaggerResponse(200, "Question fetched successfully")]
+    [SwaggerResponse(404, "Question was not found in the DB")]
+    [SwaggerResponse(401, "Unauthorized user")]
     public async Task<IActionResult> GetQuestion(Guid questionId)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
@@ -38,6 +49,11 @@ public class QuestionController : ControllerBase
     [Authorize]
     [HttpDelete]
     [Route("{questionId}")]
+    [SwaggerOperation(Summary = "Delete question", Description = "Deletes the question with the given Id")]
+    [SwaggerResponse(200, "Question deleted successfully")]
+    [SwaggerResponse(404, "Question was not found in the DB")]
+    [SwaggerResponse(401, "Unauthorized user")]
+    [SwaggerResponse(403, "User is not the owner of the resource")]
     public async Task<IActionResult> DeleteQuestion(Guid questionId)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
@@ -47,6 +63,11 @@ public class QuestionController : ControllerBase
     [Authorize(Policy = "AdminOnly")]
     [HttpDelete]
     [Route("admin/{questionId}")]
+    [SwaggerOperation(Summary = "Delete question as admin", Description = "Deletes the question with the given Id")]
+    [SwaggerResponse(200, "Question deleted successfully")]
+    [SwaggerResponse(404, "Question was not found in the DB")]
+    [SwaggerResponse(401, "Unauthorized user")]
+    [SwaggerResponse(403, "User is not an admin")]
     public async Task<IActionResult> DeleteQuestionAdmin(Guid questionId)
     {
         await _questionService.DeleteQuestionAdminAsync(questionId);
@@ -56,13 +77,22 @@ public class QuestionController : ControllerBase
     [Authorize]
     [HttpPut]
     [Route("{questionId}")]
+    [SwaggerOperation(Summary = "Modify question", Description = "Modifies the question with the given Id")]
+    [SwaggerResponse(200, "Question modified successfully")]
+    [SwaggerResponse(404, "Question was not found in the DB")]
+    [SwaggerResponse(401, "Unauthorized user")]
+    [SwaggerResponse(403, "User is not the owner of the resource")]
+    [SwaggerResponse(400, "Mapping not created/ Validation errors")]
+
     public async Task<IActionResult> EditQuestion(Guid questionId, [FromBody] QuestionRequest questionRequest)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
         return Ok(await _questionService.EditQuestionAsync(token, questionId, questionRequest));
     }
     [HttpGet]
-    public async Task<IActionResult> GetQuestions([Required][FromQuery] int offset, [Required][FromQuery] int size)
+    [SwaggerOperation(Summary = "Get batch of questions", Description = "Get the requested batch of questions sorted by popularity")]
+    [SwaggerResponse(200, "Questions fetched successfully")]
+    public async Task<IActionResult> GetQuestions([Required][FromQuery] [SwaggerParameter(Description = "Starting index for the batch of questions")]int offset, [Required][FromQuery] [SwaggerParameter(Description = "Number of questions to fetch")]int size)
     {
         var questions = await _questionService.GetQuestionsAsync(offset, size);
         return Ok(questions);

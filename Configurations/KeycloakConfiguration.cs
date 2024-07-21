@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Stackoverflow_Light.Configurations;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,6 +61,11 @@ public static class KeycloakConfiguration
                     new[] { "openid" }
                 }
             });
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+            c.EnableAnnotations();
+
         });
     }
 
