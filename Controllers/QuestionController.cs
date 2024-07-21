@@ -40,6 +40,7 @@ public class QuestionController : ControllerBase
     [SwaggerResponse(200, "Question fetched successfully")]
     [SwaggerResponse(404, "Question was not found in the DB")]
     [SwaggerResponse(401, "Unauthorized user")]
+    [SwaggerResponse(400, "Mapping not created")]
     public async Task<IActionResult> GetQuestion(Guid questionId)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
@@ -54,6 +55,8 @@ public class QuestionController : ControllerBase
     [SwaggerResponse(404, "Question was not found in the DB")]
     [SwaggerResponse(401, "Unauthorized user")]
     [SwaggerResponse(403, "User is not the owner of the resource")]
+    [SwaggerResponse(400, "Mapping not created")]
+
     public async Task<IActionResult> DeleteQuestion(Guid questionId)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
@@ -68,6 +71,8 @@ public class QuestionController : ControllerBase
     [SwaggerResponse(404, "Question was not found in the DB")]
     [SwaggerResponse(401, "Unauthorized user")]
     [SwaggerResponse(403, "User is not an admin")]
+    [SwaggerResponse(400, "Mapping not created")]
+
     public async Task<IActionResult> DeleteQuestionAdmin(Guid questionId)
     {
         await _questionService.DeleteQuestionAdminAsync(questionId);
