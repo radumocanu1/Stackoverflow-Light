@@ -8,9 +8,9 @@ This project represents the backend side of a 'Forum' application, where the use
 
 <ol>
  <li>Users can see questions but are not allowed to post anything unless they log in.</li>
- <li>The users are authenticating against Keycloak as OIDC provider (also supporting Registration).</li>
+ <li>The users are authenticating using Keycloak as OIDC provider (also supporting Registration).</li>
 <li>The questions are displayed based on popularity (i.e. total number of UNIQUE viewers).</li>
-<li>Questions are not retrieved all at once. Being a heavy read application, the questions will be fetched and buffered as the end-user is 'scrooling'.</li>
+<li>Questions are not retrieved all at once. Being a heavy read application, the questions will be fetched and buffered as the end-user is 'scrolling'.</li>
 <li>For question retrieval the application is making use of caching.</li>
 <li>The application is fully containerized and delivery ready, providing a 'prepopulated db' and a 'preconfigured keycloak' server (check Running steps section)</li>
 
@@ -26,15 +26,13 @@ This project represents the backend side of a 'Forum' application, where the use
 
 ## Oidc user mapping
 
-The Rest API is relying on an external Identity Provider. This means that the users are being registered and authenticated against an external server (which is also storing their credentials). <br> However this comes with a significant challenge, as the API should also be able to interact with a 'local representation' of the users in order to be able to make certain decisions (i.e. Should the user be allowed to delete this question? Which user posted this question? etc.).
-<br> To be able to achieve that, the REST application is defining a special endpoint **/user/create-mapping** that decodes the access token received under the Authorization header and extracts the username ("preffered_name" claim) + the user's id in the OIDC provider ("sub" claim). Using those claims the Api will create a mapping between the OIDC user and it's representation in the relational db.
+The Rest API is relying on an external Identity Provider. This means that the users are being registered and authenticated using an external server (which is also storing their credentials). <br> However this comes with a significant challenge, as the API should also be able to interact with a 'local representation' of the users, in order to be able to make certain decisions (i.e. Should the user be allowed to delete this question? Which user posted this question? etc.).
+<br> To be able to achieve that, the REST application is defining a special endpoint **/user/create-mapping** that decodes the access token received under the Authorization header and extracts the username ("preferred_username" claim) + the user's id in the OIDC provider ("sub" claim). Using those claims the Api will create a mapping between the OIDC user and it's representation in the relational db.
 
-### Scenarious covered:
+### Scenarios covered:
 <ol>
  <li>Multiple 'create mapping requests'  might come from the same user -> Fig 1 </li>
 <li>A request might be done to an authorized endpoint prior to the mapping being created (in this case the fronted client should implement a redirect/ retry strategy) -> Fig 2</li>
-<li>MySql -> Database </li>
-<li>Docker + docker compose -> Containerization </li>
 </ol>
 
 Fig 1:
@@ -47,8 +45,8 @@ Fig 2:
 
 ### Admin Users
 
-The application is also supporting administrators. Those are users with special privileges defined at OIDC provider level. 
-<br> While regular users are allowed to delete/ modify only the questions + answers that they crated, Admin users are allowed to delete any question or answer. This will guarantee a more controlled and safe enviroment.
+The application is also supporting administrators. They are users with special privileges defined at OIDC provider level. 
+<br> While regular users are allowed to delete/ modify only the questions + answers that they created, Admin users are allowed to delete any question or answer. This will guarantee a more controlled and safe environment.
 <br> This is done by setting up a middleware that will decode the token and search for a special OIDC role:
 
 ![img.png](images/img4.png)
@@ -61,13 +59,13 @@ This is done by creating a *many-to-many* SQL relationship between User and Ques
 
 ## Caching Strategy
 
-The Api is implemented in a way so that when scrolling on a questions page the user won't get all questions *at once*. Instead, a buffering strategy is implemented. <br> The endpoint that fetches the questions is expecting two additional query parameters : offset (current question index) + size(number of questions to retrieve on a single request).
+The Api is implemented in a way so that when scrolling on questions page the user won't get all questions *at once*. Instead, a buffering strategy is implemented. <br> The endpoint that fetches the questions is expecting two additional query parameters : offset (current question index) + size(number of questions to retrieve on a single request).
 <br> What is more, an in-memory caching strategy is applied (because the Api *expects* the user to scroll further). To reduce latency, on a *cache miss* the Api won't retrieve from the DB **only** the requested questions, but a bigger batch (controlled by the "DbBatchSize" value in **appsettings.json** -> by default set to 40). 
 <br> On a new request, the Api will check if the questions requested are already present in the cache (by computing a cache key). 
 
 ## Database EER Diagram 
 
-![img.png](images/img.png)
+![img.png](images/img3.png)
 
 
 
