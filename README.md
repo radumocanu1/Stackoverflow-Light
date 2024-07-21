@@ -76,8 +76,8 @@ The Api is implementing a collection of Unit tests covering all workflows includ
 
 ## CI/CD Pipeline
 
-The project is also defining a Continuous Integration/Continuous delivery pipeline, using Github Actions.
-Every time a push is made on the **main** branch, the API's Unit tests will be triggered resulting in a successful build / a failure. The pipeline logic might be enchanced by pushng the artifcats to a remote repo (such as dockerHub) only on *green* builds.
+The project is also defining a Continuous Integration/Continuous Delivery pipeline, using Github Actions.
+Every time a push is made on the **main** branch, the API's Unit tests will be triggered resulting in a successful build / a failure. The pipeline logic might be enhanced by pushing the artifacts to a remote repo (such as dockerHub) only on *green* builds.
 <br> The pipeline definition can be found in *.github/workflows/dotnet-tests.yaml*.
 
 ## Running steps
@@ -111,4 +111,10 @@ The **only** prerequisite needed to run the project is to have docker + docker c
 
 ![img.png](images/img7.png)
 
-5. The db was already populated with some data (aprox 60 questions) to showcase the caching machanism. However, the Ids are AI-generated, some of them not being interpreted as GUID type. For extensive testing please create own entries. 
+5. The db was already populated with some data (aprox 60 questions) to showcase the caching mechanism. However, the Ids are AI-generated, some of them not being interpreted as GUID type. For extensive testing please create own entries. 
+
+## Future work:
+
+ - Add a more comprehensive documentation to Swagger UI.
+ - Include postman integration tests in the CI/CD pipeline using a tool like *newman*
+ - Upvote/Downvote questions + answers
