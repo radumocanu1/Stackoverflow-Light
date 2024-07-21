@@ -87,7 +87,7 @@ The **only** prerequisite needed to run the project is to have docker + docker c
 1. Open the terminal on your machine.
 2. Clone this repository.<br>
 
-   <code>git pull https://github.com/radumocanu1/Stackoverflow-Light.git</code>
+   <code>git clone https://github.com/radumocanu1/Stackoverflow-Light.git</code>
 3. Navigate to project root.
    <br><code>cd Stackoverflow-Light</code>
 3. Start the services (.Net API + Keycloak Server + Mysql Instance) using docker compose:
