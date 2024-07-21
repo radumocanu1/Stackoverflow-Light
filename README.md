@@ -31,8 +31,8 @@ The Rest API is relying on an external Identity Provider. This means that the us
 
 ### Scenarious covered:
 <ol>
- <li>Multiple 'create mapping requests' with the same token might come (fig 1) </li>
-<li>Keycloak -> OIDC provider</li>
+ <li>Multiple 'create mapping requests'  might come from the same user -> Fig 1 </li>
+<li>A request might be done to an authorized endpoint prior to the mapping being created (in this case the fronted client should implement a redirect/ retry strategy) -> Fig 2</li>
 <li>MySql -> Database </li>
 <li>Docker + docker compose -> Containerization </li>
 </ol>
@@ -40,6 +40,35 @@ The Rest API is relying on an external Identity Provider. This means that the us
 Fig 1:
 
 ![Error Image](images/img.png)
+
+Fig 2:
+
+![img.png](images/img2.png)
+
+### Admin Users
+
+The application is also supporting administrators. Those are users with special privileges defined at OIDC provider level. 
+<br> While regular users are allowed to delete/ modify only the questions + answers that they crated, Admin users are allowed to delete any question or answer. This will guarantee a more controlled and safe enviroment.
+<br> This is done by setting up a middleware that will decode the token and search for a special OIDC role:
+
+![img.png](images/img4.png)
+
+## Questions Popularity Strategy
+
+To identify the most popular questions, the API is implementing a logic to identify the number of **unique** viewers. <br>
+This is done by creating a *many-to-many* SQL relationship between User and Question Entities. The associative table that stays in the middle will identify the userIds that already *clicked* on a specific question, to avoid counting them multiple times.
+<br> As part of this strategy, an additional field was defined in the Question table (ViewCount) that is being incremented whenever a new user is clicking on a specific question. This will ensure fast ordering when retrieving the **most popular** questions first.
+
+## Caching Strategy
+
+The Api is implemented in a way so that when scrolling on a questions page the user won't get all questions *at once*. Instead, a buffering strategy is implemented. <br> The endpoint that fetches the questions is expecting two additional query parameters : offset (current question index) + size(number of questions to retrieve on a single request).
+<br> What is more, an in-memory caching strategy is applied (because the Api *expects* the user to scroll further). To reduce latency, on a *cache miss* the Api won't retrieve from the DB **only** the requested questions, but a bigger batch (controlled by the "DbBatchSize" value in **appsettings.json** -> by default set to 40). 
+<br> On a new request, the Api will check if the questions requested are already present in the cache (by computing a cache key). 
+
+## Database EER Diagram 
+
+![img.png](images/img.png)
+
 
 
 ## Testing
@@ -52,3 +81,36 @@ The Api is implementing a collection of Unit tests covering all workflows includ
 The project is also defining a Continuous Integration/Continuous delivery pipeline, using Github Actions.
 Every time a push is made on the **main** branch, the API's Unit tests will be triggered resulting in a successful build / a failure. The pipeline logic might be enchanced by pushng the artifcats to a remote repo (such as dockerHub) only on *green* builds.
 <br> The pipeline definition can be found in *.github/workflows/dotnet-tests.yaml*.
+
+## Running steps
+
+The **only** prerequisite needed to run the project is to have docker + docker compose  installed on your machine.
+
+1. Open the terminal on your machine.
+2. Clone this repository.<br>
+
+   <code>git pull https://github.com/radumocanu1/Stackoverflow-Light.git</code>
+3. Navigate to project root.
+   <br><code>cd Stackoverflow-Light</code>
+3. Start the services (.Net API + Keycloak Server + Mysql Instance) using docker compose:
+   <br><code>docker compose up -d</code>
+4. Wait for the containers to start.
+5. Navigate to swagger UI.
+<br><code>http://localhost:8080/swagger/index.html</code>
+
+## Additional testing information 
+
+1. Two users are already created: Regular user (username:user, password: user) + Admin User (username: admin, password:admin).
+2. To authenticate click on the **Authorize** button in swagger (without providing any client secret as the clientID is set to public).
+
+![img.png](images/img5.png)
+
+3. One can create multiple users by clicking on the User Registration option on Keycloak UI.
+
+![img.png](images/img6.png)
+
+4. To change the current user click on this button. 
+
+![img.png](images/img7.png)
+
+5. The db was already populated with some data (aprox 60 questions) to showcase the caching machanism. However, the Ids are AI-generated, some of them not being interpreted as GUID type. For extensive testing please create own entries. 
