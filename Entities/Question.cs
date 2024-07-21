@@ -25,6 +25,7 @@ public class Question
     // can also be computed by running a SQL count on the associative table between User and Question entities
     // stored directly in the Question table + updated regularly for fast question ordering on demand 
     public int ViewsCount { get; set; } = 0;
+    [JsonIgnore]
     public ICollection<UserQuestionView> UserQuestionViews { get; set; } = new List<UserQuestionView>();
 
 }

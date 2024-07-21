@@ -22,7 +22,7 @@ public class CustomExceptionFilter : IExceptionFilter
                 StatusCode = 400
             };
         }
-        else if (context.Exception is QuestionNotFound questionNotFound)
+        else if (context.Exception is EntityNotFound questionNotFound)
         {
             context.Result = new ObjectResult(new { message = questionNotFound.Message })
             {
@@ -34,6 +34,13 @@ public class CustomExceptionFilter : IExceptionFilter
             context.Result = new ObjectResult(new { message = operationNotAllowed.Message })
             {
                 StatusCode = 403
+            };
+        }
+        else if (context.Exception is OidcUserMappingAlreadyCreated oidcUserMappingAlreadyCreated)
+        {
+            context.Result = new ObjectResult(new { message = oidcUserMappingAlreadyCreated.Message })
+            {
+                StatusCode = 400
             };
         }
     }

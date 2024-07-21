@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stackoverflow_Light.Configurations;
@@ -27,7 +28,7 @@ public class QuestionController : ControllerBase
 
     }
 
-    [HttpGet("/{questionId}")]
+    [HttpGet("{questionId}")]
     public async Task<IActionResult> GetQuestion(Guid questionId)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
@@ -36,7 +37,7 @@ public class QuestionController : ControllerBase
 
     [Authorize]
     [HttpDelete]
-    [Route("/{questionId}")]
+    [Route("{questionId}")]
     public async Task<IActionResult> DeleteQuestion(Guid questionId)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
@@ -54,14 +55,14 @@ public class QuestionController : ControllerBase
 
     [Authorize]
     [HttpPut]
-    [Route("/{questionId}")]
+    [Route("{questionId}")]
     public async Task<IActionResult> EditQuestion(Guid questionId, [FromBody] QuestionRequest questionRequest)
     {
         var token = Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim();
         return Ok(await _questionService.EditQuestionAsync(token, questionId, questionRequest));
     }
     [HttpGet]
-    public async Task<IActionResult> GetQuestions([FromQuery] int offset, [FromQuery] int size)
+    public async Task<IActionResult> GetQuestions([Required][FromQuery] int offset, [Required][FromQuery] int size)
     {
         var questions = await _questionService.GetQuestionsAsync(offset, size);
         return Ok(questions);

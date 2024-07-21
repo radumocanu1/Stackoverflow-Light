@@ -30,15 +30,13 @@ public class QuestionRepository : IQuestionRepository
             .Include(q => q.Answers)
             .FirstOrDefaultAsync(q => q.Id == questionId);
         if (question == null)
-            throw new QuestionNotFound(string.Format(ApplicationConstants.QUESTION_NOT_FOUND_MESSAGE, questionId.ToString()));
+            throw new EntityNotFound(string.Format(ApplicationConstants.QUESTION_NOT_FOUND_MESSAGE, questionId.ToString()));
         return question;
     }
 
     public async Task DeleteQuestionAsync(Guid questionId)
     {
-        var question = await _context.Questions.FindAsync(questionId);
-        if (question == null)
-            throw new QuestionNotFound(string.Format(ApplicationConstants.QUESTION_NOT_FOUND_MESSAGE, questionId.ToString()));
+        var question = await FindQuestionAsyncById(questionId);
         
         _context.Questions.Remove(question);
         await _context.SaveChangesAsync();
@@ -53,22 +51,17 @@ public class QuestionRepository : IQuestionRepository
             .FirstOrDefaultAsync();
 
         if (userId == Guid.Empty)
-            throw new QuestionNotFound(string.Format(ApplicationConstants.QUESTION_NOT_FOUND_MESSAGE, questionId.ToString()));
+            throw new EntityNotFound(string.Format(ApplicationConstants.QUESTION_NOT_FOUND_MESSAGE, questionId.ToString()));
 
         return userId;
     }
     
     public async Task<Question> EditQuestionAsync(Guid questionId, QuestionRequest questionRequest)
     {
-        var question = await _context.Questions.FindAsync(questionId);
-    
-        if (question == null)
-            throw new QuestionNotFound(string.Format(ApplicationConstants.QUESTION_NOT_FOUND_MESSAGE, questionId.ToString()));
 
+        var question = await FindQuestionAsyncById(questionId);
         question.Content = questionRequest.Content;
-
         await _context.SaveChangesAsync();
-        
         return question;
     }
 
@@ -97,6 +90,15 @@ public class QuestionRepository : IQuestionRepository
             question.ViewsCount++;
             await _context.SaveChangesAsync();
         }
+    }
+
+    private async Task<Question> FindQuestionAsyncById(Guid questionId)
+    {
+        var question = await _context.Questions.FindAsync(questionId);
+    
+        if (question == null)
+            throw new EntityNotFound(string.Format(ApplicationConstants.QUESTION_NOT_FOUND_MESSAGE, questionId.ToString()));
+        return question;
     }
 
     

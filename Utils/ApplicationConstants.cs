@@ -8,5 +8,6 @@ public interface ApplicationConstants
     public const string QUESTION_SUCCESSFULLY_DELETED = "Question was successfully deleted";
 
     public const string OPERATION_NOT_ALLOWED_MESSAGE = "Current user is not allowed to modify a resource they are not an owner of";
-    public const string QUESTION_SUCCESSFULLY_EDITED = "Question was successfully edited";
+    public const string OIDC_MAPPING_ALREADY_CREATED = "You cannot recreate an active user (mapping between OIDC user and application user was already done)";
+    public const string ANSWER_NOT_FOUND_MESSAGE = "Answer with id {0} cannot be found in the DB";
 }

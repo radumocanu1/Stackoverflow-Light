@@ -25,13 +25,23 @@ public class UserService : IUserService
         {
             throw new ArgumentException(String.Format(ApplicationConstants.OIDC_CLAIMS_EXTRACTION_ERROR, subClaim, username));
         }
-
-        var user = new User
+        // check if the user mapping was not previously created ( to avoid created multiple user DB instances for the same Keycloak user)
+        try
         {
-            Username = username,
-            OidcUserMapping = new OidcUserMapping { SubClaim = subClaim }
-        };
-        return await _userRepository.CreateUserAsync(user);
+            await GetUserIdFromSubClaimAsync(subClaim);
+        }
+        catch (OidcUserMappingNotFound _)
+        {
+            var user = new User
+            {
+                Username = username,
+                OidcUserMapping = new OidcUserMapping { SubClaim = subClaim }
+            };
+            return await _userRepository.CreateUserAsync(user);
+        }
+
+        throw new OidcUserMappingAlreadyCreated(ApplicationConstants.OIDC_MAPPING_ALREADY_CREATED);
+
     }
 
     public async Task<Guid> GetUserIdFromSubClaimAsync(string subClaim)
