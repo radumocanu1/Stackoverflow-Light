@@ -32,11 +32,12 @@ The Rest API is relying on an external Identity Provider. This means that the us
 ### Scenarious covered:
 <ol>
  <li>Multiple 'create mapping requests' with the same token might come </li>
-![Error Message](images/img.png)
 <li>Keycloak -> OIDC provider</li>
 <li>MySql -> Database </li>
 <li>Docker + docker compose -> Containerization </li>
 </ol>
+![Error Message] (./images/img.png)
+![img.png](img.png)
 
 ## Testing
 
