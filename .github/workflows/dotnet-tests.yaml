@@ -1,4 +1,4 @@
-name: .NET Tests
+name: .NET Core CI
 
 on:
   push:
@@ -8,14 +8,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup .NET
+      - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0'
+          dotnet-version: '8.x'
 
       - name: Restore dependencies
         run: dotnet restore
