@@ -5,7 +5,7 @@ namespace Stackoverflow_Light.Services;
 
 public interface IQuestionService
 {
-    Task<IEnumerable<Question>> GetQuestionsAsync(int offset, int size);
+    Task<IEnumerable<QuestionDto>> GetQuestionsAsync(int offset, int size);
     Task<Question> CreateQuestionAsync(string token, QuestionRequest questionRequest);
     Task<Question> GetQuestionAsync(string token, Guid questionId);
 

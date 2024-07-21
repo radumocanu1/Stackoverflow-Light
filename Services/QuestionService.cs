@@ -30,7 +30,7 @@ public class QuestionService : IQuestionService
 
     }
     
-    public async Task<IEnumerable<Question>> GetQuestionsAsync(int offset, int size)
+    public async Task<IEnumerable<QuestionDto>> GetQuestionsAsync(int offset, int size)
     {
         string cacheKey = $"questions_batch_{(offset + size) / _batchSize}";
         if (!_memoryCache.TryGetValue(cacheKey, out List<Question> cachedQuestions))
@@ -41,7 +41,18 @@ public class QuestionService : IQuestionService
             _memoryCache.Set(cacheKey, cachedQuestions, cacheOptions);
         }
 
-        return cachedQuestions.Skip(offset % _batchSize).Take(size);
+        var selectedQuestions = cachedQuestions.Skip(offset % _batchSize).Take(size);
+    
+        // Map questions to QuestionDto
+        var questionDtos = selectedQuestions.Select(q => new QuestionDto
+        {
+            Score = q.Score,
+            ViewCount = q.ViewsCount,
+            Content = q.Content,
+            AuthorId = q.UserId
+        });
+
+        return questionDtos;    
     }
 
 
