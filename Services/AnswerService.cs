@@ -4,16 +4,17 @@ using Stackoverflow_Light.Exceptions;
 using Stackoverflow_Light.models;
 using Stackoverflow_Light.Repositories;
 using Stackoverflow_Light.Utils;
+using Stackoverflow_Light.Utils.Interfaces;
 
 namespace Stackoverflow_Light.Services;
 
 public class AnswerService : IAnswerService
 {
     private readonly IAnswerRepository _answerRepository;
-    private readonly TokenClaimsExtractor _tokenClaimsExtractor;
+    private readonly ITokenClaimsExtractor _tokenClaimsExtractor;
     private readonly IUserService _userService;
 
-    public AnswerService(IAnswerRepository answerRepository, TokenClaimsExtractor tokenClaimsExtractor, IUserService userService)
+    public AnswerService(IAnswerRepository answerRepository, ITokenClaimsExtractor tokenClaimsExtractor, IUserService userService)
     {
         _answerRepository = answerRepository;
         _tokenClaimsExtractor = tokenClaimsExtractor;

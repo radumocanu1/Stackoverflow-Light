@@ -5,6 +5,7 @@ using Stackoverflow_Light.Exceptions;
 using Stackoverflow_Light.Repositories;
 using Stackoverflow_Light.Services;
 using Stackoverflow_Light.Utils;
+using Stackoverflow_Light.Utils.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,7 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerService, AnswerService>();
 builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+builder.Services.AddScoped<ITokenClaimsExtractor, TokenClaimsExtractor>();
 
 // add in memory caching service 
 builder.Services.Configure<AppSettings>(builder.Configuration);

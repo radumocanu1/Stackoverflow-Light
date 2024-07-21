@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Stackoverflow_Light</RootNamespace>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>    
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,8 +19,29 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.7" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+        <PackageReference Include="Moq" Version="4.20.70" />
+        <PackageReference Include="NSubstitute" Version="5.1.0" />
+        <PackageReference Include="NUnit" Version="4.1.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\bin\Debug\net8.0\Stackoverflow-Light.Tests.deps.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\bin\Debug\net8.0\Stackoverflow-Light.Tests.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\obj\Debug\net8.0\Stackoverflow-Light.Tests.sourcelink.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\obj\Stackoverflow-Light.Tests.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="TestProject1\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="TestProject1\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="TestProject1\obj\TestProject1.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\bin\Debug\net8.0\TestProject1.deps.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\bin\Debug\net8.0\TestProject1.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\obj\Debug\net8.0\TestProject1.sourcelink.json" />
+      <_ContentIncludedByDefault Remove="Stackoverflow-Light.Tests\obj\TestProject1.csproj.nuget.dgspec.json" />
     </ItemGroup>
 
 </Project>

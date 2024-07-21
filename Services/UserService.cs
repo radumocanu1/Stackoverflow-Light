@@ -3,15 +3,16 @@ using Stackoverflow_Light.Entities;
 using Stackoverflow_Light.Exceptions;
 using Stackoverflow_Light.Repositories;
 using Stackoverflow_Light.Utils;
+using Stackoverflow_Light.Utils.Interfaces;
 
 namespace Stackoverflow_Light.Services;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
-    private readonly TokenClaimsExtractor _tokenClaimsExtractor;
+    private readonly ITokenClaimsExtractor _tokenClaimsExtractor;
 
-    public UserService(IUserRepository userRepository, TokenClaimsExtractor tokenClaimsExtractor)
+    public UserService(IUserRepository userRepository, ITokenClaimsExtractor tokenClaimsExtractor)
     {
         _userRepository = userRepository;
         _tokenClaimsExtractor = tokenClaimsExtractor;

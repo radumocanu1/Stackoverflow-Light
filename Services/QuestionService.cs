@@ -5,20 +5,21 @@ using Stackoverflow_Light.Exceptions;
 using Stackoverflow_Light.models;
 using Stackoverflow_Light.Repositories;
 using Stackoverflow_Light.Utils;
+using Stackoverflow_Light.Utils.Interfaces;
 
 namespace Stackoverflow_Light.Services;
 
 public class QuestionService : IQuestionService
 {
     private readonly IQuestionRepository _questionRepository;
-    private readonly TokenClaimsExtractor _tokenClaimsExtractor;
+    private readonly ITokenClaimsExtractor _tokenClaimsExtractor;
     private readonly IUserService _userService;
     private readonly IMemoryCache _memoryCache; 
     private readonly ILogger<QuestionService> _logger;    
     private readonly int _batchSize;
     
 
-    public QuestionService(IQuestionRepository questionRepository, TokenClaimsExtractor tokenClaimsExtractor, IUserService userService, ILogger<QuestionService> logger, IMemoryCache memoryCache, IConfiguration configuration)
+    public QuestionService(IQuestionRepository questionRepository, ITokenClaimsExtractor tokenClaimsExtractor, IUserService userService, ILogger<QuestionService> logger, IMemoryCache memoryCache, IConfiguration configuration)
     {
         _questionRepository = questionRepository;
         _tokenClaimsExtractor = tokenClaimsExtractor;
