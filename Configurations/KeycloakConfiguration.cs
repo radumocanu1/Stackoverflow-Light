@@ -81,7 +81,8 @@ public static class KeycloakConfiguration
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    RoleClaimType = "realm_access" 
+                    RoleClaimType = "realm_access",
+                    ValidIssuer = "http://localhost:8081/realms/Stackoverflow-Light"
                 };
             });
     }
