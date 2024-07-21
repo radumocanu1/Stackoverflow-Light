@@ -11,18 +11,20 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly ITokenClaimsExtractor _tokenClaimsExtractor;
+    private readonly ILogger<UserService> _logger;
 
-    public UserService(IUserRepository userRepository, ITokenClaimsExtractor tokenClaimsExtractor)
+    public UserService(IUserRepository userRepository, ITokenClaimsExtractor tokenClaimsExtractor, ILogger<UserService> logger)
     {
         _userRepository = userRepository;
         _tokenClaimsExtractor = tokenClaimsExtractor;
+        _logger = logger;
     }
 
     public async Task<User> CreateMappingAsync(string token)
     {
         var subClaim = _tokenClaimsExtractor.ExtractClaim(token, "sub");
         var username = _tokenClaimsExtractor.ExtractClaim(token, "preferred_username");
-        if (subClaim == null || username == null)
+        if (subClaim == string.Empty || username == string.Empty)
         {
             throw new ArgumentException(String.Format(ApplicationConstants.OIDC_CLAIMS_EXTRACTION_ERROR, subClaim, username));
         }
@@ -31,7 +33,7 @@ public class UserService : IUserService
         {
             await GetUserIdFromSubClaimAsync(subClaim);
         }
-        catch (OidcUserMappingNotFound _)
+        catch (OidcUserMappingNotFound)
         {
             var user = new User
             {

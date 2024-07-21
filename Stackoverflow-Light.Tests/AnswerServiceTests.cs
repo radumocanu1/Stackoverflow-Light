@@ -1,5 +1,7 @@
 using NSubstitute;
+using Stackoverflow_Light.Configurations;
 using Stackoverflow_Light.Entities;
+using Stackoverflow_Light.Exceptions;
 using Stackoverflow_Light.models;
 using Stackoverflow_Light.Repositories;
 using Stackoverflow_Light.Services;
@@ -53,6 +55,100 @@ public class AnswerServiceTests
         Assert.That(result.UserId, Is.EqualTo(userId)); 
         Assert.That(result.QuestionId, Is.EqualTo(questionId)); 
     }
+     [Test]
+    public void CreateAnswerAsync_ShouldThrowException_WhenUserIdCannotBeRetrieved()
+    {
+        var token = "invalid-token";
+        var questionId = Guid.NewGuid();
+        var answerRequest = new AnswerRequest { Content = "Test Content" };
 
-    // Adaugă alte teste pentru DeleteAnswerAsync, EditAnswerAsync etc.
+        _tokenClaimsExtractor.ExtractClaim(token, "sub").Returns("subClaim");
+        _userService.GetUserIdFromSubClaimAsync("subClaim").Returns(Task.FromException<Guid>(new Exception("User not found")));
+
+        Assert.ThrowsAsync<Exception>(async () => await _answerService.CreateAnswerAsync(token, questionId, answerRequest));
+    }
+
+        [Test]
+        public async Task DeleteAnswerAsync_ShouldDeleteAnswer_WhenUserIsAuthor()
+        {
+            var token = "valid-token";
+            var answerId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            _tokenClaimsExtractor.ExtractClaim(token, "sub").Returns("subClaim");
+            _userService.GetUserIdFromSubClaimAsync("subClaim").Returns(Task.FromResult(userId));
+            _answerRepository.GetAuthorIdFromAnswerIdAsync(answerId).Returns(Task.FromResult(userId));
+
+            await _answerService.DeleteAnswerAsync(token, answerId);
+
+            await _answerRepository.Received().DeleteAnswerAsync(answerId);
+        }
+
+        [Test]
+        public async Task DeleteAnswerAsync_ShouldThrowOperationNotAllowed_WhenUserIsNotAuthor()
+        {
+            var token = "valid-token";
+            var answerId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            _tokenClaimsExtractor.ExtractClaim(token, "sub").Returns("subClaim");
+            _userService.GetUserIdFromSubClaimAsync("subClaim").Returns(Task.FromResult(userId));
+            // returns a different UserID
+            _answerRepository.GetAuthorIdFromAnswerIdAsync(answerId).Returns(Task.FromResult(Guid.NewGuid())); 
+
+            var ex = Assert.ThrowsAsync<OperationNotAllowed>(async () => await _answerService.DeleteAnswerAsync(token, answerId));
+            Assert.That(ex.Message, Is.EqualTo(ApplicationConstants.OPERATION_NOT_ALLOWED_MESSAGE));
+        }
+
+        [Test]
+        public async Task EditAnswerAsync_ShouldReturnUpdatedAnswer_WhenUserIsAuthor()
+        {
+            var token = "valid-token";
+            var answerId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            var answerRequest = new AnswerRequest { Content = "Updated Content" };
+            var updatedAnswer = new Answer
+            {
+                Content = answerRequest.Content,
+                UserId = userId,
+                QuestionId = Guid.NewGuid()
+            };
+
+            _tokenClaimsExtractor.ExtractClaim(token, "sub").Returns("subClaim");
+            _userService.GetUserIdFromSubClaimAsync("subClaim").Returns(Task.FromResult(userId));
+            _answerRepository.GetAuthorIdFromAnswerIdAsync(answerId).Returns(Task.FromResult(userId));
+            _answerRepository.EditAnswerAsync(answerId, answerRequest).Returns(Task.FromResult(updatedAnswer));
+
+            var result = await _answerService.EditAnswerAsync(token, answerId, answerRequest);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Content, Is.EqualTo(answerRequest.Content));
+        }
+
+        [Test]
+        public void EditAnswerAsync_ShouldThrowOperationNotAllowed_WhenUserIsNotAuthor()
+        {
+            var token = "valid-token";
+            var answerId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            var answerRequest = new AnswerRequest { Content = "Updated Content" };
+
+            _tokenClaimsExtractor.ExtractClaim(token, "sub").Returns("subClaim");
+            _userService.GetUserIdFromSubClaimAsync("subClaim").Returns(Task.FromResult(userId));
+            _answerRepository.GetAuthorIdFromAnswerIdAsync(answerId).Returns(Task.FromResult(Guid.NewGuid())); // Different userId
+
+            var ex = Assert.ThrowsAsync<OperationNotAllowed>(async () => await _answerService.EditAnswerAsync(token, answerId, answerRequest));
+            Assert.That(ex.Message, Is.EqualTo(ApplicationConstants.OPERATION_NOT_ALLOWED_MESSAGE));
+        }
+
+        [Test]
+        public async Task DeleteAnswerAdminAsync_ShouldDeleteAnswer()
+        {
+            var answerId = Guid.NewGuid();
+
+            await _answerService.DeleteAnswerAdminAsync(answerId);
+
+            await _answerRepository.Received().DeleteAnswerAsync(answerId);
+        }
 }
+    
