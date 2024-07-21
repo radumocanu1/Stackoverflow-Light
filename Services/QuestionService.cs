@@ -49,7 +49,8 @@ public class QuestionService : IQuestionService
             Score = q.Score,
             ViewCount = q.ViewsCount,
             Content = q.Content,
-            AuthorId = q.UserId
+            AuthorId = q.UserId,
+            QuestionId = q.Id
         });
 
         return questionDtos;    
