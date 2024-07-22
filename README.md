@@ -68,7 +68,6 @@ The Api is implemented in a way so that when scrolling on questions page the use
 ![img.png](images/img3.png)
 
 
-
 ## Testing
 
 The Api is implementing a collection of Unit tests covering all workflows including exception handling. The tests can be found in *Stackoverflow-Light.Tests* directory.
